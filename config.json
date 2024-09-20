@@ -1,4 +1,8 @@
 {
+    "title": "Ruota della fortuna",
+    "description": "Gira la ruota e scopri la prossima attività!",
+    "btnSpinText": "Gira la ruota",
+    "btnStopText": "Ferma la ruota",
     "items": [
         "Premio 1",
         "Premio 2",

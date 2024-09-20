@@ -8,11 +8,15 @@ from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 # Carica gli elementi dal file JSON
 with open('config.json', 'r') as f:
     data = json.load(f)
+title = data['title'].encode('latin1').decode('utf-8')
+description = data['description'].encode('latin1').decode('utf-8')
+btnSpinText = data['btnSpinText'].encode('latin1').decode('utf-8')
+btnStopText = data['btnStopText'].encode('latin1').decode('utf-8')
 items = data['items']
 
 # Variabili per l'animazione
 spinning = False
-angle = 0
+angle = 8  # Angolo iniziale
 speed = 20  # Velocità iniziale
 stop_requested = False
 
@@ -73,7 +77,7 @@ def spin_wheel():
 
 # Configura la GUI di Tkinter
 root = tk.Tk()
-root.title("Ruota della Fortuna")
+root.title(title)
 
 # Disegna la ruota iniziale
 fig, ax, wedges = draw_wheel()
@@ -82,15 +86,15 @@ canvas.draw()
 canvas.get_tk_widget().pack()
 
 # Etichetta per il risultato
-result_label = tk.Label(root, text="Gira la ruota per vedere su cosa si ferma!", font=("Arial", 14))
+result_label = tk.Label(root, text=description, font=("Arial", 14))
 result_label.pack()
 
 # Pulsante per far girare la ruota
-spin_button = tk.Button(root, text="Gira la ruota", command=start_spinning, font=("Arial", 12))
+spin_button = tk.Button(root, text=btnSpinText, command=start_spinning, font=("Arial", 12))
 spin_button.pack(pady=10)
 
 # Pulsante per fermare la ruota
-stop_button = tk.Button(root, text="Ferma la ruota", command=stop_spinning, font=("Arial", 12))
+stop_button = tk.Button(root, text=btnStopText, command=stop_spinning, font=("Arial", 12))
 stop_button.pack(pady=10)
 
 # Avvio dell'app Tkinter
