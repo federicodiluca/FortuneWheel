@@ -16,13 +16,13 @@ items = data['items']
 
 # Variabili per l'animazione
 spinning = False
-angle = 8  # Angolo iniziale
+angle = 0
 speed = 20  # Velocità iniziale
 stop_requested = False
 
 # Funzione per disegnare la ruota
 def draw_wheel(start_angle=0):
-    fig, ax = plt.subplots(figsize=(5, 5), subplot_kw=dict(aspect="equal"))
+    fig, ax = plt.subplots(figsize=(8, 8), subplot_kw=dict(aspect="equal"))
     wedges, texts = ax.pie([1] * len(items), labels=items, colors=plt.cm.tab20.colors[:len(items)], startangle=start_angle)
     
     # Aggiungi la freccia fissa che indica il premio
@@ -67,9 +67,8 @@ def spin_wheel():
             speed -= 0.4  # Riduce gradualmente la velocità
             if speed <= 0:
                 spinning = False
-                # Se la ruota si è fermata, seleziona un vincitore
-                selected_index = int((angle / 360) * len(items)) % len(items)
-                result_label.config(text=f"La ruota si è fermata su: {items[selected_index]}")
+                # Se la ruota si è fermata, seleziona il vincitore su cui si è fermata la freccia
+                winner = items[int((angle % 360) / 360 * len(items))]   
                 return
 
         # Richiama la funzione dopo 50 ms per creare l'animazione
@@ -84,10 +83,6 @@ fig, ax, wedges = draw_wheel()
 canvas = FigureCanvasTkAgg(fig, master=root)
 canvas.draw()
 canvas.get_tk_widget().pack()
-
-# Etichetta per il risultato
-result_label = tk.Label(root, text=description, font=("Arial", 14))
-result_label.pack()
 
 # Pulsante per far girare la ruota
 spin_button = tk.Button(root, text=btnSpinText, command=start_spinning, font=("Arial", 12))
