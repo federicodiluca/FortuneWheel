@@ -1,13 +1,32 @@
 import tkinter as tk
 import matplotlib.pyplot as plt
 import numpy as np
+import sys
+import os
 import json
 import random
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 
+# Percorso relativo al file config.json
+def get_config_path():
+    base_path = os.path.abspath(".")    
+    return os.path.join(base_path, 'fortuneWheel.json')
+
+# Leggere il file config.json
+try:
+    with open(get_config_path(), 'r') as config_file:
+        config = json.load(config_file)
+        # print(config_file)
+except FileNotFoundError:
+    print("File fortuneWheel.json non trovato.")
+    sys.exit(1)
+
+config_path = get_config_path()
+
 # Carica gli elementi dal file JSON
-with open('config.json', 'r') as f:
+with open(config_path, 'r') as f:
     data = json.load(f)
+
 title = data['title'].encode('latin1').decode('utf-8')
 description = data['description'].encode('latin1').decode('utf-8')
 btnSpinText = data['btnSpinText'].encode('latin1').decode('utf-8')
@@ -55,7 +74,7 @@ def stop_spinning():
     global stop_requested
     stop_requested = True
     disable_stop_button()  # Disabilita il pulsante "Stop" quando viene premuto
-
+    
 # Funzione che gestisce l'animazione della ruota
 def spin_wheel():
     global angle, spinning, speed, stop_requested
@@ -74,8 +93,10 @@ def spin_wheel():
             if speed <= 0:
                 spinning = False
                 winner = items[int((angle % 360) / 360 * len(items))]
-                # Riabilita il pulsante "Inizia" quando la ruota si ferma
-                disable_spin_button()
+                
+                # Riabilita il pulsante "Inizia" e disabilita il pulsante "Stop"
+                spin_button.config(state=tk.NORMAL)
+                stop_button.config(state=tk.DISABLED)
                 return
 
         root.after(50, spin_wheel)
@@ -97,6 +118,14 @@ spin_button.pack(pady=10)
 # Pulsante per fermare la ruota
 stop_button = tk.Button(root, text=btnStopText, command=stop_spinning, font=("Arial", 12))
 stop_button.pack(pady=10)
+
+# Funzione per chiudere correttamente l'applicazione
+def on_closing():
+    root.quit()  # Ferma il main loop di tkinter
+    root.destroy()  # Distrugge la finestra e chiude correttamente l'applicazione
+
+# Configura la chiusura della finestra
+root.protocol("WM_DELETE_WINDOW", on_closing)
 
 # Avvio dell'app Tkinter
 root.mainloop()
