@@ -31,47 +31,53 @@ def draw_wheel(start_angle=0):
     
     return fig, ax, wedges
 
+# Funzione per disabilitare solo il pulsante "Inizia"
+def disable_spin_button():
+    spin_button.config(state=tk.DISABLED)
+    stop_button.config(state=tk.NORMAL)
+
+# Funzione per disabilitare solo il pulsante "Stop"
+def disable_stop_button():
+    stop_button.config(state=tk.DISABLED)
+    spin_button.config(state=tk.NORMAL)
+
 # Funzione per far girare la ruota
 def start_spinning():
     global spinning, speed, stop_requested
     spinning = True
     stop_requested = False
     speed = 20  # Reimposta la velocità iniziale
+    disable_spin_button()  # Disabilita il pulsante "Inizia"
     spin_wheel()
 
 # Funzione per rallentare e fermare la ruota
 def stop_spinning():
     global stop_requested
     stop_requested = True
+    disable_stop_button()  # Disabilita il pulsante "Stop" quando viene premuto
 
 # Funzione che gestisce l'animazione della ruota
 def spin_wheel():
     global angle, spinning, speed, stop_requested
 
     if spinning:
-        # Aggiorna l'angolo della ruota
         angle = (angle + speed) % 360
-
-        # Rimuove il vecchio grafico e ridisegna la ruota
         ax.clear()
         wedges, texts = ax.pie([1] * len(items), labels=items, colors=plt.cm.tab20.colors[:len(items)], startangle=angle)
-
-        # Ridisegna la freccia
         ax.annotate('', xy=(0, 1), xytext=(0, 1.3), 
                     arrowprops=dict(facecolor='red', shrink=0.05, width=5, headwidth=15))
         
         canvas.draw()
 
-        # Se il fermo è richiesto, riduci la velocità fino a fermarsi
         if stop_requested:
-            speed -= 0.4  # Riduce gradualmente la velocità
+            speed -= 0.4
             if speed <= 0:
                 spinning = False
-                # Se la ruota si è fermata, seleziona il vincitore su cui si è fermata la freccia
-                winner = items[int((angle % 360) / 360 * len(items))]   
+                winner = items[int((angle % 360) / 360 * len(items))]
+                # Riabilita il pulsante "Inizia" quando la ruota si ferma
+                disable_spin_button()
                 return
 
-        # Richiama la funzione dopo 50 ms per creare l'animazione
         root.after(50, spin_wheel)
 
 # Configura la GUI di Tkinter
